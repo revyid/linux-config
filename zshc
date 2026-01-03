@@ -1,0 +1,41 @@
+#!/bin/bash
+set -e
+
+echo "==> Install Nerd Font (Meslo)..."
+sudo pacman -S --noconfirm ttf-meslo-nerd
+
+echo "==> Install Powerlevel10k..."
+ZSH_CUSTOM="$HOME/.oh-my-zsh/custom"
+
+if [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]; then
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
+    "$ZSH_CUSTOM/themes/powerlevel10k"
+else
+  echo "Powerlevel10k already installed."
+fi
+
+echo "==> Set Powerlevel10k as theme..."
+sed -i 's/^ZSH_THEME=.*/ZSH_THEME="powerlevel10k\/powerlevel10k"/' ~/.zshrc
+
+echo "==> Enable instant prompt..."
+grep -q "instant-prompt" ~/.zshrc || cat << 'EOF' >> ~/.zshrc
+
+# Enable Powerlevel10k instant prompt
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+EOF
+
+echo "==> Optimize for VM / low resource..."
+grep -q "DISABLE_AUTO_UPDATE" ~/.zshrc || cat << 'EOF' >> ~/.zshrc
+
+# Performance tweaks
+DISABLE_AUTO_UPDATE="true"
+DISABLE_MAGIC_FUNCTIONS="true"
+ENABLE_CORRECTION="false"
+COMPLETION_WAITING_DOTS="false"
+EOF
+
+echo "==> Done!"
+echo "Restart terminal lalu ikuti konfigurasi Powerlevel10k."
+echo "Atau jalankan manual: p10k configure"
